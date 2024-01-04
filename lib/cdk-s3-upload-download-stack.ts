@@ -101,4 +101,133 @@ export class CdkS3Stack extends cdk.Stack {
     };
     bucketResource.addMethod("GET", listBucketIntegration, listBucketMethodOptions);
 
-  
+    //GetObject (Metadata) method
+    this.addActionToPolicy("s3:GetObject");
+    const getObjectMetadataIntegration = new apigw.AwsIntegration({
+      service: "s3",
+      region: "us-east-1",
+      path: '{bucket}/{object}',
+      integrationHttpMethod: "HEAD",
+      options: {
+        credentialsRole: this.apiGatewayRole,
+        passthroughBehavior: apigw.PassthroughBehavior.WHEN_NO_TEMPLATES,
+        requestParameters: { 
+          'integration.request.path.bucket': 'method.request.path.folder',
+          'integration.request.path.object': 'method.request.path.item',
+          'integration.request.header.Accept': 'method.request.header.Accept' 
+        },
+        integrationResponses: [{
+          statusCode: '200',
+          responseParameters: { 'method.response.header.Content-Type': 'integration.response.header.Content-Type'}
+        }]        
+      }
+    });
+
+    //GetObject (Metadata) method options
+    const getObjectMetadataMethodOptions = {
+      authorizationType: apigw.AuthorizationType.IAM,
+      requestParameters: {
+        'method.request.path.folder': true,
+        'method.request.path.item': true,
+        'method.request.header.Accept': true
+      },
+      methodResponses: [
+        {
+          statusCode: '200',
+          responseParameters: {
+            'method.response.header.Content-Type': true
+          }
+        }]
+    };
+    bucketItemResource.addMethod("HEAD", getObjectMetadataIntegration, getObjectMetadataMethodOptions);
+
+    //GetObject method
+    this.addActionToPolicy("s3:GetObject");
+    const getObjectIntegration = new apigw.AwsIntegration({
+      service: "s3",
+      region: "us-east-1",
+      path: myBucket.bucketName+'/{object}',
+      integrationHttpMethod: "GET",
+      options: {
+        credentialsRole: this.apiGatewayRole,
+        passthroughBehavior: apigw.PassthroughBehavior.WHEN_NO_TEMPLATES,
+        requestParameters: { 
+          'integration.request.path.bucket': 'method.request.path.folder',
+          'integration.request.path.object': 'method.request.path.item',
+          'integration.request.header.Accept': 'method.request.header.Accept' 
+        },
+        integrationResponses: [{
+          statusCode: '200',
+          responseParameters: { 'method.response.header.Content-Type': 'integration.response.header.Content-Type'}
+        }]        
+      }
+    });
+
+    //GetObject method options
+    const getObjectMethodOptions = {
+      authorizationType: apigw.AuthorizationType.IAM,
+      requestParameters: {
+        'method.request.path.folder': true,
+        'method.request.path.item': true,
+        'method.request.header.Accept': true
+      },
+      methodResponses: [
+        {
+          statusCode: '200',
+          responseParameters: {
+            'method.response.header.Content-Type': true
+          }
+        }]
+    };
+    bucketItemResource.addMethod("GET", getObjectIntegration, getObjectMethodOptions);
+
+    //PutObject method
+    this.addActionToPolicy("s3:PutObject");
+    const putObjectIntegration = new apigw.AwsIntegration({
+      service: "s3",
+      region: "us-east-1",
+      path: myBucket.bucketName+'/{object}',
+      integrationHttpMethod: "PUT",
+      options: {
+        credentialsRole: this.apiGatewayRole,
+        passthroughBehavior: apigw.PassthroughBehavior.WHEN_NO_TEMPLATES,
+        requestParameters: { 
+          'integration.request.path.bucket': 'method.request.path.folder',
+          'integration.request.path.object': 'method.request.path.item',
+          'integration.request.header.Accept': 'method.request.header.Accept' 
+        },
+        integrationResponses: [{
+          statusCode: '200',
+          responseParameters: { 'method.response.header.Content-Type': 'integration.response.header.Content-Type'}
+        }]        
+      }
+    });
+
+    //PutObject method options
+    const putObjectMethodOptions = {
+      authorizationType: apigw.AuthorizationType.IAM,
+      requestParameters: {
+        'method.request.path.folder': true,
+        'method.request.path.item': true,
+        'method.request.header.Accept': true,
+        'method.request.header.Content-Type': true
+      },
+      methodResponses: [
+        {
+          statusCode: '200',
+          responseParameters: {
+            'method.response.header.Content-Type': true
+          }
+        }]
+    };
+    bucketItemResource.addMethod("PUT", putObjectIntegration, putObjectMethodOptions);
+  }
+  private addActionToPolicy(action: string) {
+    this.apiGatewayRole.addToPolicy(new iam.PolicyStatement({
+        resources: [
+            "*"
+        ],
+        actions: [`${action}`]
+    }));
+  }
+}
