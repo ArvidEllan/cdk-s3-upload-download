@@ -80,5 +80,20 @@ export class CdkS3Stack extends cdk.Stack {
         requestParameters: {"integration.request.path.bucket":false,"integration.request
       }
     })
+     //ListBucket (Objects) method options
+    const listBucketMethodOptions = {
+      authorizationType: apigw.AuthorizationType.IAM,
+      requestParameters: {
+        'method.request.path.folder': true
+      },
+      methodResponses: [
+        {
+          statusCode: '200',
+          responseParameters: {
+            'method.response.header.Content-Type': true
+          }
+        }]
+    };
+    bucketResource.addMethod("GET", listBucketIntegration, listBucketMethodOptions);
 
   
