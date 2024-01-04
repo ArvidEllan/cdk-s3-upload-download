@@ -1,4 +1,4 @@
-# Welcome to your CDK TypeScript project
+#  My CDK Typescript Project for Crud Serverless API 
 
 This is a blank project for CDK development with TypeScript.
 
