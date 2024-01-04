@@ -1,13 +1,13 @@
 // import * as cdk from 'aws-cdk-lib';
 // import { Template } from 'aws-cdk-lib/assertions';
-// import * as CdkS3UploadDownload from '../lib/cdk-s3-upload-download-stack';
+// import * as CdkS3 from '../lib/cdk-s3-stack';
 
 // example test. To run these tests, uncomment this file along with the
-// example resource in lib/cdk-s3-upload-download-stack.ts
+// example resource in lib/cdk-s3-stack.ts
 test('SQS Queue Created', () => {
 //   const app = new cdk.App();
 //     // WHEN
-//   const stack = new CdkS3UploadDownload.CdkS3UploadDownloadStack(app, 'MyTestStack');
+//   const stack = new CdkS3.CdkS3Stack(app, 'MyTestStack');
 //     // THEN
 //   const template = Template.fromStack(stack);
 

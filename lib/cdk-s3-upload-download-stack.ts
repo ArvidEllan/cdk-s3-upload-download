@@ -3,7 +3,8 @@ import { Construct } from 'constructs';
 import { StackProps } from 'aws-cdk-lib';
 import { aws_apigateway as apigw } from "aws-cdk-lib";
 import { aws_iam as iam } from "aws-cdk-lib";
-import {aws_s3 as s3} from "aws-cdk-lib";;
+import {aws_s3 as s3} from "aws-cdk-lib";import { AuthorizationType } from 'aws-cdk-lib/aws-apigateway';
+;
 
 export class CdkS3Stack extends cdk.Stack {
 
@@ -55,6 +56,29 @@ export class CdkS3Stack extends cdk.Stack {
         }]        
       }
     });
-    
+    //List All myBuckets method options
+    const listMyBucketsMethodOptions = {
+      AuthorizationType : apigw.AuthorizationType.IAM,
+      methodResponses : [{
+        statusCode: "200",
+        responseParameters:{
+          "method.response.header.Content-Type":"true" }
+      }]
+    };
+    restApi.root.addMethod("Get",listMyBucketsIntegration,listMyBucketsMethodOptions);
 
+    //ListBucket (objects) method
+    this.addActionToPolicy("s3:ListBucket");
+    const listMyBucketsIntegration = new apigw.AwsIntegration({
+      service: "s3",
+      region : "us-east-1",
+      path: myBucket.bucketName,
+      integrationHttpMethod: "GET",
+      options: {
+        credentialsRole: this.apiGatewayRole,
+        passthroughBehavior: apigw.PassthroughBehavior.WHEN_NO_TEMPLATES
+        requestParameters: {"integration.request.path.bucket":false,"integration.request
+      }
+    })
 
+  
