@@ -3,8 +3,7 @@ import { Construct } from 'constructs';
 import { StackProps } from 'aws-cdk-lib';
 import { aws_apigateway as apigw } from "aws-cdk-lib";
 import { aws_iam as iam } from "aws-cdk-lib";
-import {aws_s3 as s3} from "aws-cdk-lib";import { AuthorizationType } from 'aws-cdk-lib/aws-apigateway';
-;
+import {aws_s3 as s3} from "aws-cdk-lib";;
 
 export class CdkS3Stack extends cdk.Stack {
 
@@ -56,31 +55,37 @@ export class CdkS3Stack extends cdk.Stack {
         }]        
       }
     });
-    //List All myBuckets method options
+    //ListAllMyBuckets method options
     const listMyBucketsMethodOptions = {
-      AuthorizationType : apigw.AuthorizationType.IAM,
-      methodResponses : [{
-        statusCode: "200",
-        responseParameters:{
-          "method.response.header.Content-Type":"true" }
-      }]
+      authorizationType: apigw.AuthorizationType.IAM,
+      methodResponses: [
+        {
+          statusCode: '200',
+          responseParameters: {
+            'method.response.header.Content-Type': true
+          }
+        }]
     };
-    restApi.root.addMethod("Get",listMyBucketsIntegration,listMyBucketsMethodOptions);
+    restApi.root.addMethod("GET", listMyBucketsIntegration, listMyBucketsMethodOptions);
 
-    //ListBucket (objects) method
+    //ListBucket (Objects) method
     this.addActionToPolicy("s3:ListBucket");
-    const listMyBucketsIntegration = new apigw.AwsIntegration({
+    const listBucketIntegration = new apigw.AwsIntegration({
       service: "s3",
-      region : "us-east-1",
+      region: "us-east-1",
       path: myBucket.bucketName,
       integrationHttpMethod: "GET",
       options: {
         credentialsRole: this.apiGatewayRole,
-        passthroughBehavior: apigw.PassthroughBehavior.WHEN_NO_TEMPLATES
-        requestParameters: {"integration.request.path.bucket":false,"integration.request
+        passthroughBehavior: apigw.PassthroughBehavior.WHEN_NO_TEMPLATES,
+        requestParameters: { 'integration.request.path.bucket': 'method.request.path.folder' },
+        integrationResponses: [{
+          statusCode: '200',
+          responseParameters: { 'method.response.header.Content-Type': 'integration.response.header.Content-Type'}
+        }]        
       }
-    })
-     //ListBucket (Objects) method options
+    });
+    //ListBucket (Objects) method options
     const listBucketMethodOptions = {
       authorizationType: apigw.AuthorizationType.IAM,
       requestParameters: {
